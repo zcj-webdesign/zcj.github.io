@@ -2,11 +2,25 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
     <title>19岁生日快乐！</title>
     <style>
+        * {
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            box-sizing: border-box;
+        }
+        
+        html {
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+            height: 100%;
+            touch-action: manipulation;
+        }
+        
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
             background-color: #ffebee;
             display: flex;
             justify-content: center;
@@ -16,6 +30,8 @@
             overflow: hidden;
             position: relative;
             transition: background-color 0.5s;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         body.dimmed {
@@ -23,8 +39,10 @@
         }
 
         .card {
-            width: 350px;
-            height: 500px;
+            width: 90%;
+            max-width: 350px;
+            height: auto;
+            min-height: 500px;
             background: linear-gradient(135deg, #fff, #fce4ec);
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
@@ -35,24 +53,22 @@
             padding: 20px;
             box-sizing: border-box;
             text-align: center;
-        }
-
-        .card:hover {
-            transform: scale(1.05);
+            margin: 20px 0;
         }
 
         h1 {
             color: #e91e63;
             margin-top: 20px;
-            font-size: 28px;
+            font-size: clamp(1.5rem, 6vw, 1.75rem);
             text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
         }
 
         .message {
-            margin-top: 30px;
+            margin-top: 20px;
             color: #555;
             line-height: 1.6;
-            font-size: 16px;
+            font-size: clamp(0.9rem, 3.5vw, 1rem);
+            padding: 0 10px;
         }
 
         .cake {
@@ -136,21 +152,21 @@
         }
 
         .btn {
-            padding: 10px 20px;
+            padding: 12px 24px;
             background: #e91e63;
             color: white;
             border: none;
             border-radius: 30px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: clamp(0.9rem, 4vw, 1rem);
             transition: all 0.3s;
-            white-space: nowrap;
+            min-width: 120px;
+            min-height: 44px;
         }
 
-        .btn:hover {
+        .btn:active {
             background: #c2185b;
-            transform: translateY(-3px);
-            box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+            transform: translateY(2px);
         }
 
         .confetti {
@@ -168,10 +184,11 @@
         }
 
         .signature {
-            margin-top: 30px;
+            margin-top: 20px;
             font-style: italic;
             color: #e91e63;
             font-weight: bold;
+            font-size: clamp(0.8rem, 3.5vw, 0.9rem);
         }
 
         .hearts {
@@ -202,7 +219,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             color: #e91e63;
-            font-size: 32px;
+            font-size: clamp(1.5rem, 6vw, 2rem);
             text-align: center;
             z-index: 101;
             opacity: 0;
@@ -211,9 +228,11 @@
             text-shadow: 2px 2px 5px rgba(255,255,255,0.8);
             font-weight: bold;
             background-color: rgba(255, 255, 255, 0.7);
-            padding: 20px 40px;
+            padding: 15px 30px;
             border-radius: 20px;
             box-shadow: 0 0 20px rgba(233, 30, 99, 0.5);
+            width: 90%;
+            max-width: 300px;
         }
 
         .wish-message.active {
@@ -224,7 +243,7 @@
 
         @keyframes pulse {
             0% { transform: translate(-50%, -50%) scale(1); }
-            50% { transform: translate(-50%, -50%) scale(1.1); }
+            50% { transform: translate(-50%, -50%) scale(1.05); }
             100% { transform: translate(-50%, -50%) scale(1); }
         }
 
@@ -285,9 +304,10 @@
             border-radius: 10px;
             z-index: 1000;
             text-align: center;
-            max-width: 80%;
+            max-width: 85%;
             box-shadow: 0 0 20px rgba(0,0,0,0.5);
             animation: fadeIn 0.5s;
+            display: none;
         }
 
         @keyframes fadeIn {
@@ -297,13 +317,14 @@
 
         .alert-btn {
             margin-top: 15px;
-            padding: 8px 20px;
+            padding: 10px 20px;
             background: #e91e63;
             color: white;
             border: none;
             border-radius: 20px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: clamp(0.8rem, 3.5vw, 0.9rem);
+            min-height: 44px;
         }
 
         /* 添加朦胧遮罩层样式 */
@@ -324,6 +345,18 @@
         .overlay.active {
             opacity: 1;
             visibility: visible;
+        }
+        
+        /* 链接样式 */
+        .link-container {
+            margin-top: 20px;
+        }
+        
+        .link-container a {
+            color: #e91e63;
+            text-decoration: none;
+            font-size: clamp(0.8rem, 3.5vw, 0.9rem);
+            word-break: break-all;
         }
     </style>
 </head>
@@ -379,6 +412,21 @@
     </div>
 
     <script>
+        // 防止双击缩放
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(event) {
+            const now = Date.now();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, { passive: false });
+        
+        // 防止手势缩放
+        document.addEventListener('gesturestart', function(e) {
+            e.preventDefault();
+        });
+
         document.addEventListener('DOMContentLoaded', function() {
             const candleBtn = document.getElementById('lightCandle');
             const flame = document.querySelector('.flame');
@@ -389,7 +437,9 @@
             const overlay = document.getElementById('overlay');
             
             // 显示提示框
-            alertBox.style.display = 'block';
+            setTimeout(() => {
+                alertBox.style.display = 'block';
+            }, 500);
             
             // 关闭提示框
             alertBtn.addEventListener('click', function() {
@@ -421,7 +471,15 @@
                     birthdayMusic.play().catch(e => {
                         console.log('音乐播放失败:', e);
                         // 如果自动播放被阻止，提示用户
-                        alert('请点击页面任意位置后，再尝试点亮蜡烛');
+                        const alert = document.createElement('div');
+                        alert.className = 'alert-box';
+                        alert.innerHTML = '<p>请点击"确定"后，再尝试点亮蜡烛</p><button class="alert-btn" id="retryBtn">确定</button>';
+                        document.body.appendChild(alert);
+                        
+                        document.getElementById('retryBtn').addEventListener('click', function() {
+                            alert.remove();
+                        });
+                        
                         candleBtn.textContent = '点亮蜡烛';
                         candleBtn.disabled = false;
                         flame.classList.remove('active');
