@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>18岁生日快乐！</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            touch-action: manipulation;
+        }
+        
+        .container {
+            text-align: center;
+            z-index: 10;
+            width: 90%;
+            max-width: 500px;
+            padding: 20px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            color: #fff;
+            text-shadow: 2px 2px 0 #ff7676, 4px 4px 0 rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+            animation: bounce 1s ease infinite alternate;
+        }
+        
+        h2 {
+            font-size: 1.8rem;
+            color: #fff;
+            margin: 0;
+            text-shadow: 1px 1px 0 #ff7676;
+        }
+        
+        p {
+            font-size: 1.1rem;
+            color: #fff;
+            margin: 15px 0 30px;
+            line-height: 1.5;
+        }
+        
+        .start-btn {
+            padding: 12px 30px;
+            background: #fff;
+            color: #ff7676;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            width: 80%;
+            max-width: 200px;
+        }
+        
+        .start-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+        
+        .balloon {
+            position: absolute;
+            width: 40px;
+            height: 60px;
+            background: #ff7676;
+            border-radius: 50%;
+            animation: float 8s ease-in-out infinite;
+            z-index: 1;
+        }
+        
+        .balloon:before {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 40px;
+            background: #ccc;
+            bottom: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .balloon:nth-child(2) {
+            background: #4fc3f7;
+            left: 10%;
+            top: 20%;
+            animation-delay: 1s;
+        }
+        
+        .balloon:nth-child(3) {
+            background: #8bc34a;
+            left: 75%;
+            top: 15%;
+            animation-delay: 2s;
+        }
+        
+        .balloon:nth-child(4) {
+            background: #ffeb3b;
+            left: 85%;
+            top: 50%;
+            animation-delay: 3s;
+        }
+        
+        .balloon:nth-child(5) {
+            background: #9c27b0;
+            left: 5%;
+            top: 60%;
+            animation-delay: 4s;
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #f44336;
+            opacity: 0;
+            z-index: 1;
+        }
+        
+        .countdown {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.5s;
+        }
+        
+        .countdown.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .countdown-number {
+            font-size: 6rem;
+            color: #fff;
+            animation: pulse 1s infinite;
+        }
+        
+        /* 纯色弹窗样式 - 手机适配 */
+        .custom-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .modal-content {
+            background: #ff7676;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            width: 100%;
+            max-width: 350px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            color: white;
+        }
+        
+        .modal-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        
+        .modal-input {
+            padding: 12px 15px;
+            font-size: 16px;
+            margin: 15px 0;
+            width: 100%;
+            border: none;
+            border-radius: 25px;
+            outline: none;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .modal-btn {
+            padding: 12px 25px;
+            background: white;
+            color: #ff7676;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 200px;
+            margin: 0 auto;
+        }
+        
+        .modal-btn:active {
+            transform: translateY(2px);
+        }
+        
+        #errorMsg {
+            color: #ffeb3b;
+            display: none;
+            margin-top: 12px;
+            font-size: 14px;
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-30px) rotate(5deg);
+            }
+        }
+        
+        @keyframes bounce {
+            0% {
+                transform: translateY(0);
+            }
+            100% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+    </style>
+</head>
+<body>
+    <!-- 气球背景 -->
+    <div class="balloon"></div>
+    <div class="balloon"></div>
+    <div class="balloon"></div>
+    <div class="balloon"></div>
+    <div class="balloon"></div>
+    
+    <!-- 主内容 -->
+    <div class="container">
+        <h1>Happy Birthday!</h1>
+        <h2 id="birthdayPerson">亲爱的[名字]</h2>
+        <p>欢迎来到你的19岁生日庆典！</p>
+        <button class="start-btn" id="startBtn">点击进入</button>
+    </div>
+    
+    <!-- 倒计时 -->
+    <div class="countdown" id="countdown">
+        <div class="countdown-number" id="countdownNumber">3</div>
+    </div>
+    
+    <!-- 纯色弹窗 -->
+    <div class="custom-modal" id="nameModal">
+        <div class="modal-content">
+            <div class="modal-title">请输入寿星名字</div>
+            <input type="text" class="modal-input" id="nameInput" placeholder="请输入姓名">
+            <button class="modal-btn" id="confirmBtn">确认</button>
+            <div id="errorMsg">请输入正确的寿星名字！</div>
+        </div>
+    </div>
+    
+    <script>
+        // 页面加载时显示自定义弹窗
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('nameModal');
+            const nameInput = document.getElementById('nameInput');
+            const confirmBtn = document.getElementById('confirmBtn');
+            const errorMsg = document.getElementById('errorMsg');
+            const birthdayPerson = document.getElementById('birthdayPerson');
+            const startBtn = document.getElementById('startBtn');
+            
+            // 显示弹窗
+            modal.style.display = 'flex';
+            setTimeout(() => { nameInput.focus(); }, 300);
+            
+            // 确认按钮点击事件
+            confirmBtn.addEventListener('click', validateName);
+            
+            // 输入框回车事件
+            nameInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') validateName();
+            });
+            
+            function validateName() {
+                const userName = nameInput.value.trim();
+                
+                if (userName === '紫研'|| userName === '研' || userName === '哈基研'||  userName === '齐紫研') {
+                    // 验证通过
+                    birthdayPerson.textContent = '亲爱的哈基研';
+                    modal.style.display = 'none';
+                    startBtn.disabled = false;
+                    errorMsg.style.display = 'none';
+                    
+                    // 显示欢迎动画
+                    startBtn.style.animation = 'pulse 1.5s infinite';
+                } else {
+                    // 验证失败
+                    errorMsg.style.display = 'block';
+                    nameInput.value = '';
+                    
+                    // 添加错误动画
+                    nameInput.style.animation = 'shake 0.5s';
+                    setTimeout(() => {
+                        nameInput.style.animation = '';
+                        nameInput.focus();
+                    }, 500);
+                }
+            }
+            
+            // 开始按钮点击事件
+            startBtn.addEventListener('click', function() {
+                // 显示倒计时
+                const countdown = document.getElementById('countdown');
+                countdown.classList.add('active');
+                
+                // 3秒倒计时
+                let count = 3;
+                const countdownNumber = document.getElementById('countdownNumber');
+                const timer = setInterval(() => {
+                    count--;
+                    countdownNumber.textContent = count;
+                    
+                    if (count <= 0) {
+                        clearInterval(timer);
+                        // 跳转到下一页
+                        window.location.href = "first.html"; // 替换为实际下一页
+                        countdown.classList.remove('active');
+                    }
+                }, 1000);
+                
+                // 创建彩色纸屑效果
+                createConfetti();
+            });
+            
+            // 防止手机浏览器缩放
+            document.addEventListener('gesturestart', function(e) {
+                e.preventDefault();
+            });
+        });
+        
+        // 创建彩色纸屑
+        function createConfetti() {
+            for (let i = 0; i < 30; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.top = -10 + 'px';
+                confetti.style.backgroundColor = getRandomColor();
+                confetti.style.transform = 'rotate(' + Math.random() * 360 + 'deg)';
+                document.body.appendChild(confetti);
+                
+                setTimeout(() => {
+                    confetti.style.opacity = '1';
+                    confetti.style.transition = 'all ' + (Math.random() * 3 + 2) + 's ease-out';
+                    confetti.style.top = '100vh';
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                }, i * 100);
+                
+                setTimeout(() => {
+                    confetti.remove();
+                }, 5000);
+            }
+        }
+        
+        // 生成随机颜色
+        function getRandomColor() {
+            const colors = ['#f44336', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5', '#2196f3', '#03a9f4', '#00bcd4', '#009688', '#4CAF50', '#8BC34A', '#CDDC39', '#FFEB3B', '#FFC107', '#FF9800', '#FF5722'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+    </script>
+</body>
+</html>
