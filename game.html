@@ -13,6 +13,7 @@
             overflow: hidden;
             touch-action: manipulation;
             user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
         
         #game-container {
@@ -55,28 +56,32 @@
         }
         
         #message {
-            position: absolute;
+            position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background-color: rgba(255, 255, 255, 0.9);
-            padding: 30px;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 20px;
             border-radius: 15px;
             text-align: center;
-            max-width: 80%;
+            width: 85%;
+            max-width: 400px;
             display: none;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             z-index: 100;
+            box-sizing: border-box;
         }
         
         #message h1 {
             color: #d81b60;
-            margin-top: 0;
+            margin: 10px 0;
+            font-size: 24px;
         }
         
         #message p {
-            font-size: 18px;
-            line-height: 1.6;
+            font-size: 16px;
+            line-height: 1.5;
+            margin: 10px 0;
         }
         
         #start-screen {
@@ -91,6 +96,8 @@
             justify-content: center;
             align-items: center;
             z-index: 200;
+            padding: 20px;
+            box-sizing: border-box;
         }
         
         #start-button {
@@ -98,7 +105,7 @@
             color: white;
             border: none;
             padding: 15px 30px;
-            font-size: 20px;
+            font-size: 18px;
             border-radius: 50px;
             cursor: pointer;
             margin-top: 20px;
@@ -106,24 +113,66 @@
             transition: transform 0.2s, background-color 0.2s;
         }
         
-        #start-button:hover {
-            background-color: #c2185b;
-            transform: scale(1.05);
-        }
-        
         #start-button:active {
+            background-color: #c2185b;
             transform: scale(0.95);
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 480px) {
+            #player {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .falling-item {
+                width: 40px;
+                height: 40px;
+            }
+            
+            #score-display {
+                font-size: 18px;
+                padding: 8px 12px;
+            }
+            
+            #message {
+                padding: 15px;
+                width: 90%;
+            }
+            
+            #message h1 {
+                font-size: 22px;
+            }
+            
+            #message p {
+                font-size: 15px;
+            }
+            
+            #start-button {
+                padding: 12px 25px;
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 320px) {
+            #message h1 {
+                font-size: 20px;
+            }
+            
+            #message p {
+                font-size: 14px;
+            }
         }
     </style>
 </head>
 <body>
     <div id="game-container">
         <div id="start-screen">
-            <h1 style="color: #d81b60; font-size: 28px;">生日快乐小游戏</h1>
-            <p style="font-size: 18px; text-align: center; max-width: 80%;">
+            <h1 style="color: #d81b60; font-size: 24px; text-align: center;">生日快乐小游戏</h1>
+            <p style="font-size: 16px; text-align: center; line-height: 1.5;">
                 移动底部的爱心，接住从天上掉落的礼物<br>
                 收集20个爱心和蛋糕就能看到特别祝福哦！
-            </p >
+            </p>
             <button id="start-button">开始游戏</button>
         </div>
         
@@ -132,9 +181,9 @@
         
         <div id="message">
             <h1>生日快乐！🎉</h1>
-            <p>亲爱的哈基妍，愿你的每一天都像今天一样充满惊喜和快乐！</p >
-            <p>19岁是人生最美的开始，愿你永远保持这份纯真和笑容～</p >
-            <p>❤️ 来自紫菜卷 ❤️</p >
+            <p>亲爱的哈基妍，愿你的每一天都像今天一样充满惊喜和快乐！</p>
+            <p>19岁是人生最美的开始，愿你永远保持这份纯真和笑容～</p>
+            <p>❤️ 来自紫菜卷 ❤️</p>
         </div>
     </div>
 
@@ -145,7 +194,9 @@
         let gameRunning = false;
         let playerX = window.innerWidth / 2;
         const targetScore = 20;
-        let itemInterval; // 将itemInterval移到全局
+        let itemInterval;
+        let touchStartX = 0;
+        let playerStartX = 0;
         
         // DOM元素
         const gameContainer = document.getElementById('game-container');
@@ -162,20 +213,34 @@
             startGame();
         });
         
-        // 玩家控制
+        // 鼠标控制
         document.addEventListener('mousemove', function(e) {
             if (!gameRunning) return;
             playerX = e.clientX;
-            player.style.left = (playerX - 40) + 'px';
+            updatePlayerPosition();
         });
         
-        // 触摸控制
-        document.addEventListener('touchmove', function(e) {
+        // 触摸控制 - 更精确的触摸处理
+        player.addEventListener('touchstart', function(e) {
             if (!gameRunning) return;
+            touchStartX = e.touches[0].clientX;
+            playerStartX = parseFloat(player.style.left || '0') + 40; // 40是player宽度的一半
             e.preventDefault();
-            playerX = e.touches[0].clientX;
-            player.style.left = (playerX - 40) + 'px';
         }, { passive: false });
+        
+        player.addEventListener('touchmove', function(e) {
+            if (!gameRunning) return;
+            const touchX = e.touches[0].clientX;
+            playerX = playerStartX + (touchX - touchStartX);
+            updatePlayerPosition();
+            e.preventDefault();
+        }, { passive: false });
+        
+        function updatePlayerPosition() {
+            const maxLeft = window.innerWidth - 80;
+            const newLeft = Math.max(0, Math.min(maxLeft, playerX - 40));
+            player.style.left = newLeft + 'px';
+        }
         
         // 创建下落物品
         function createFallingItem() {
@@ -211,31 +276,38 @@
                 
                 // 检测碰撞
                 if (currentTop > window.innerHeight - 120 && 
-                    currentTop < window.innerHeight - 60 &&
-                    playerX > startX - 40 && 
-                    playerX < startX + 90) {
+                    currentTop < window.innerHeight - 60) {
                     
-                    // 得分
-                    if (item.dataset.type === 'heart') {
-                        scoreHearts++;
-                    } else {
-                        scoreCakes++;
+                    const playerRect = player.getBoundingClientRect();
+                    const itemRect = item.getBoundingClientRect();
+                    
+                    if (itemRect.right > playerRect.left && 
+                        itemRect.left < playerRect.right &&
+                        itemRect.bottom > playerRect.top && 
+                        itemRect.top < playerRect.bottom) {
+                        
+                        // 得分
+                        if (item.dataset.type === 'heart') {
+                            scoreHearts++;
+                        } else {
+                            scoreCakes++;
+                        }
+                        
+                        scoreDisplay.textContent = `爱心: ${scoreHearts} | 蛋糕: ${scoreCakes}`;
+                        
+                        // 移除元素
+                        clearInterval(fallInterval);
+                        item.remove();
+                        
+                        // 检查是否获胜
+                        if (scoreHearts + scoreCakes >= targetScore) {
+                            gameRunning = false;
+                            clearInterval(itemInterval);
+                            showMessage();
+                        }
+                        
+                        return;
                     }
-                    
-                    scoreDisplay.textContent = `爱心: ${scoreHearts} | 蛋糕: ${scoreCakes}`;
-                    
-                    // 移除元素
-                    clearInterval(fallInterval);
-                    item.remove();
-                    
-                    // 检查是否获胜
-                    if (scoreHearts + scoreCakes >= targetScore) {
-                        gameRunning = false;
-                        clearInterval(itemInterval);
-                        showMessage();
-                    }
-                    
-                    return;
                 }
                 
                 // 超出屏幕
@@ -288,9 +360,22 @@
             // 清除现有的下落物品
             document.querySelectorAll('.falling-item').forEach(item => item.remove());
             
+            // 重置玩家位置
+            playerX = window.innerWidth / 2;
+            player.style.left = (playerX - 40) + 'px';
+            
             // 开始生成新物品
+            clearInterval(itemInterval);
             itemInterval = setInterval(createFallingItem, 800);
         }
+
+        // 窗口大小改变时调整
+        window.addEventListener('resize', function() {
+            if (gameRunning) {
+                playerX = Math.min(window.innerWidth - 40, Math.max(40, playerX));
+                player.style.left = (playerX - 40) + 'px';
+            }
+        });
     </script>
 </body>
 </html>
